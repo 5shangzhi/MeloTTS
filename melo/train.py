@@ -78,7 +78,7 @@ def run():
     collate_fn = TextAudioSpeakerCollate()
     train_loader = DataLoader(
         train_dataset,
-        num_workers=16,
+        num_workers=8, # according to my machine (CPU: 8 cores) 
         shuffle=False,
         pin_memory=True,
         collate_fn=collate_fn,
@@ -166,7 +166,15 @@ def run():
     net_g = DDP(net_g, device_ids=[rank], find_unused_parameters=True)
     net_d = DDP(net_d, device_ids=[rank], find_unused_parameters=True)
     
-    pretrain_G, pretrain_D, pretrain_dur = load_pretrain_model()
+    # pretrain_G, pretrain_D, pretrain_dur = load_pretrain_model()  # pretrained English Model
+
+    # Bert-VITS2中日英底模-fix, downloaded from -> 
+    # https://openi.pcl.ac.cn/Stardust_minus/Bert-VITS2/modelmanage/model_filelist_tmpl?name=Bert-VITS2%E4%B8%AD%E6%97%A5%E8%8B%B1%E5%BA%95%E6%A8%A1-fix
+    # 2023-11-10 12:23
+    pretrain_G = '/home/michaelwu/ws/github.com/Bert-VITS2-pretrained_model_cjk/G_0.pth'
+    pretrain_D = '/home/michaelwu/ws/github.com/Bert-VITS2-pretrained_model_cjk/D_0.pth'
+    pretrain_dur = '/home/michaelwu/ws/github.com/Bert-VITS2-pretrained_model_cjk/DUR_0.pth'
+    
     hps.pretrain_G = hps.pretrain_G or pretrain_G
     hps.pretrain_D = hps.pretrain_D or pretrain_D
     hps.pretrain_dur = hps.pretrain_dur or pretrain_dur
